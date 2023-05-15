@@ -2,8 +2,8 @@ import {EventEmitter} from "events";
 import {MediaKind, RtpCapabilities} from 'mediasoup-client/lib/RtpParameters';
 import {Device} from 'mediasoup-client';
 import {Transport, TransportOptions} from 'mediasoup-client/lib/Transport';
-import {Producer, ProducerCodecOptions, ProducerOptions} from 'mediasoup-client/lib/Producer';
-import {Consumer} from 'mediasoup-client/lib/Consumer';
+import {Producer as OProducer, ProducerCodecOptions, ProducerOptions} from 'mediasoup-client/lib/Producer';
+import {Consumer as OConsumer} from 'mediasoup-client/lib/Consumer';
 import {debug}  from 'debug';
 import {
     API_OPERATION,
@@ -26,6 +26,8 @@ export declare interface ConferenceApi {
     on(event: 'addtrack', listener: (event:MediaStreamTrackEvent) => void): this
     on(event: 'removetrack', listener: (event:MediaStreamTrackEvent) => void): this
 }
+type Producer=Omit<OProducer,'on'|'emit'> & EventEmitter;
+type Consumer=Omit<OConsumer,'on'|'emit'> & EventEmitter;
 export class ConferenceApi extends EventEmitter{
     private api:MediasoupSocketApi;
     private readonly configs:ConferenceConfig;
@@ -100,6 +102,10 @@ export class ConferenceApi extends EventEmitter{
             this.emit("removetrack",new MediaStreamTrackEvent("removetrack",{track}));
             const producer=this.connectors.get(track.kind as MediaKind);
             if(producer && typeof producer!=='number'){
+                try {
+                    await this.api.closeProducer({producerId:producer.id});
+                }
+                catch (e) {}
                 producer.close();
                 producer.emit('close');
             }
@@ -244,7 +250,7 @@ export class ConferenceApi extends EventEmitter{
                 }
                 catch (e) {}
             }
-            const consumer=await this.transport.consume(data);
+            const consumer=await this.transport.consume(data) as Consumer;
             consumer.on('close', async ()=>{
                 if(this.mediaStream) {
                     consumer.track.stop();
@@ -314,7 +320,7 @@ export class ConferenceApi extends EventEmitter{
                     params.codecOptions=_codecOptions;
                 }
             }
-            const producer=await this.transport.produce(params);
+            const producer=await this.transport.produce(params) as Producer;
             producer.on('close', async ()=>{
                 const producer=this.connectors.get(kind);
                 if(producer && typeof producer!=='number'){
