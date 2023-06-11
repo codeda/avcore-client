@@ -155,6 +155,7 @@ export interface TcpStreamingRequest extends StreamKindsData,CodecKindsData{
         audio?: AudioFormatOptions
         video?: VideoFormatOptions & BitrateOptions
     }
+    listenExternalIp?:boolean
 }
 export interface BitrateOptions {
     videoBitrate?: string
