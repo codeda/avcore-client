@@ -63,7 +63,12 @@ import {
     MixerStreamData,
     MixerAddVideoTcpData,
     MixerAddAudioTcpData,
-    TcpPortData, MixerPipePortData, TcpStreamingRequest, StreamingPortsData, ClearPipeTransportsInput
+    TcpPortData,
+    MixerPipePortData,
+    TcpStreamingRequest,
+    StreamingPortsData,
+    ClearPipeTransportsInput,
+    FileStreamingOptionsInput, FileStreamingOptionsOutput
 } from './client-interfaces';
 import {TransportOptions} from 'mediasoup-client/lib/Transport';
 import {IMediasoupApi, IMediasoupApiClient} from './i-mediasoup-api';
@@ -201,6 +206,9 @@ export class MediasoupSocketApi implements IMediasoupApi{
     }
     async stopFileStreaming(json:StreamKindsData):Promise<void>{
         await this.request(ACTION.STOP_FILE_STREAMING,json);
+    }
+    async fileStreamingOptions(json:FileStreamingOptionsInput):Promise<FileStreamingOptionsOutput>{
+        return (await this.request(ACTION.FILE_STREAMING_OPTIONS,json) as FileStreamingOptionsOutput);
     }
     async recordedStreams():Promise<StreamListData>{
         return (await this.request(ACTION.RECORDED_STREAMS) as StreamListData);

@@ -423,3 +423,22 @@ export interface MixerCommandInput extends MixerInput {
 export interface ClearPipeTransportsInput {
     originUrl:string
 }
+
+
+export interface StreamingOptionsOutput extends StreamingPortsData{
+    options:string[];
+    udpPorts:{[kind in MediaKind]?:number}
+}
+export interface StreamFileOptions extends StreamFileRequest,CodecCopyOption,CodecKindsData{
+    useFfmpeg?:boolean
+    checkKinds?:boolean
+    restartTimeout?:number
+    rwTimeout?:number
+}
+export interface FileStreamingOptionsInput extends Omit<StreamFileOptions,'restartTimeout'|'restartOnExit'|'checkKinds'>,StreamKindsData, KindsByFileInput, StreamingOptions, PushSimulcastInput, CodecCopyOption, CodecKindsData {
+    duration?:number
+    listenExternalIp?:boolean
+}
+export interface FileStreamingOptionsOutput extends StreamingOptionsOutput {
+    ffmpegOptions?:string[]
+}

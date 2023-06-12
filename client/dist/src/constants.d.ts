@@ -13,6 +13,7 @@ export declare enum ACTION {
     CLOSE_PRODUCER = "closeProducer",
     FILE_STREAMING = "fileStreaming",
     LIVE_STREAMING = "liveStreaming",
+    FILE_STREAMING_OPTIONS = "fileStreamingOptions",
     LIVE_TO_HLS = "liveToHls",
     TCP_STREAMING = "tcpStreaming",
     STOP_FILE_STREAMING = "stopFileStreaming",
