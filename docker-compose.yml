@@ -1,0 +1,7 @@
+services:
+  avcore-client-build:
+    build:
+      context: ./
+    volumes:
+      - ./dist:/app/dist
+    command: ["npm", "run", "build:prod"]

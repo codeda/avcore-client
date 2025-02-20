@@ -1,25 +1,24 @@
-/// <reference types="node" />
 import { EventEmitter } from "events";
 import { MediaKind } from 'mediasoup-client/lib/RtpParameters';
 import { ConferenceInput, ConsumerLayers } from 'avcore';
 export declare interface ConferenceApi {
-    on(event: 'bitRate', listener: ({ bitRate: number, kind: MediaKind }: {
-        bitRate: any;
-        kind: any;
+    on(event: 'bitRate', listener: ({ bitRate, kind }: {
+        bitRate: number;
+        kind: MediaKind;
     }) => void): this;
-    on(event: 'connectionstatechange', listener: ({ state: string }: {
-        state: any;
+    on(event: 'connectionstatechange', listener: ({ state }: {
+        state: string;
     }) => void): this;
-    on(event: 'newTransportId', listener: ({ id: string }: {
-        id: any;
+    on(event: 'newTransportId', listener: ({ id }: {
+        id: string;
     }) => void): this;
-    on(event: 'newProducerId', listener: ({ id: string, kind: MediaKind }: {
-        id: any;
-        kind: any;
+    on(event: 'newProducerId', listener: ({ id, kind }: {
+        id: string;
+        kind: MediaKind;
     }) => void): this;
-    on(event: 'newConsumerId', listener: ({ id: string, kind: MediaKind }: {
-        id: any;
-        kind: any;
+    on(event: 'newConsumerId', listener: ({ id, kind }: {
+        id: string;
+        kind: MediaKind;
     }) => void): this;
     on(event: 'addtrack', listener: (event: MediaStreamTrackEvent) => void): this;
     on(event: 'removetrack', listener: (event: MediaStreamTrackEvent) => void): this;
@@ -31,8 +30,8 @@ export declare class ConferenceApi extends EventEmitter {
     private readonly connectors;
     private readonly layers;
     private readonly log;
-    private operation;
-    private transport;
+    private operation?;
+    private transport?;
     private mediaStream?;
     private transportTimeout;
     private iceServers;
