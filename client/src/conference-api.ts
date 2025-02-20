@@ -18,11 +18,11 @@ import {
     Simulcast
 } from 'avcore';
 export declare interface ConferenceApi {
-    on(event: 'bitRate', listener: ({bitRate:number,kind:MediaKind}) => void): this
-    on(event: 'connectionstatechange', listener: ({state:string}) => void): this
-    on(event: 'newTransportId', listener: ({id:string}) => void): this
-    on(event: 'newProducerId', listener: ({id:string,kind:MediaKind}) => void): this
-    on(event: 'newConsumerId', listener: ({id:string,kind:MediaKind}) => void): this
+    on(event: 'bitRate', listener: ({bitRate,kind}:{bitRate:number,kind:MediaKind}) => void): this
+    on(event: 'connectionstatechange', listener: ({state}:{state:string}) => void): this
+    on(event: 'newTransportId', listener: ({id}:{id:string}) => void): this
+    on(event: 'newProducerId', listener: ({id,kind}:{id:string,kind:MediaKind}) => void): this
+    on(event: 'newConsumerId', listener: ({id,kind}:{id:string,kind:MediaKind}) => void): this
     on(event: 'addtrack', listener: (event:MediaStreamTrackEvent) => void): this
     on(event: 'removetrack', listener: (event:MediaStreamTrackEvent) => void): this
 }
@@ -35,8 +35,8 @@ export class ConferenceApi extends EventEmitter{
     private readonly connectors:Map<MediaKind,Consumer|Producer|number> = new Map();
     private readonly layers:Map<MediaKind,ConsumerLayers> = new Map();
     private readonly log:typeof console.log;
-    private operation:API_OPERATION;
-    private transport:Transport;
+    private operation?:API_OPERATION;
+    private transport?:Transport;
     private mediaStream?:MediaStream;
     private transportTimeout:ReturnType<typeof setTimeout>;
     private iceServers:IceServer[]|undefined;
@@ -320,7 +320,7 @@ export class ConferenceApi extends EventEmitter{
                     params.codecOptions=_codecOptions;
                 }
             }
-            const producer=await this.transport.produce(params) as Producer;
+            const producer=await this.transport?.produce(params) as Producer;
             producer.on('close', async ()=>{
                 const producer=this.connectors.get(kind);
                 if(producer && typeof producer!=='number'){
@@ -398,7 +398,7 @@ export class ConferenceApi extends EventEmitter{
     }
     private async closeConnectors():Promise<void>{
         if(this.connectors.size){
-            await new Promise(resolve=>{
+            await new Promise<void>(resolve=>{
                 this.connectors.forEach((connector,kind)=>{
                     this.connectors.delete(kind);
                     try {
@@ -441,29 +441,36 @@ export class ConferenceApi extends EventEmitter{
             else  if(this.operation===API_OPERATION.PUBLISH){
                 this.transport = this.device.createSendTransport(data);
             }
+            if(!this.transport){
+                return this.getTransport();
+            }
             this.emit('newTransportId',{id:this.transport.id});
             if(this.configs.maxIncomingBitrate){
                 await this.api.setMaxIncomingBitrate({transportId:this.transport.id,bitrate:this.configs.maxIncomingBitrate})
 
             }
             this.transport.on('connect', ({ dtlsParameters }, callback, errback) => {
-                api.api.connectTransport({
-                    transportId: this.transport.id,
-                    dtlsParameters
-                }).then(callback).catch(errback);
+                if(this.transport){
+                    api.api.connectTransport({
+                        transportId: this.transport.id,
+                        dtlsParameters
+                    }).then(callback).catch(errback);
+                }
             });
             if(this.operation===API_OPERATION.PUBLISH){
                 this.transport.on('produce', async ({ kind, rtpParameters }, callback, errback) => {
-                    try {
-                        const data=await api.api.produce({
-                            transportId: this.transport.id,
-                            stream:api.configs.stream,
-                            kind,
-                            rtpParameters
-                        });
-                        callback(data);
-                    } catch (err) {
-                        errback(err);
+                    if(this.transport) {
+                        try {
+                            const data = await api.api.produce({
+                                transportId: this.transport.id,
+                                stream: api.configs.stream,
+                                kind,
+                                rtpParameters
+                            });
+                            callback(data);
+                        } catch (err) {
+                            errback(err);
+                        }
                     }
                 });
             }

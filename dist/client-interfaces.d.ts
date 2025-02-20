@@ -2,7 +2,7 @@ import { MediaKind, RtpCapabilities, RtpEncodingParameters, RtpParameters } from
 import { ProducerCodecOptions } from 'mediasoup-client/lib/Producer';
 import { DtlsParameters } from 'mediasoup-client/lib/Transport';
 import { CODEC, MIXER_PIPE_TYPE, MIXER_RENDER_TYPE } from './constants';
-export declare type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export interface ConsumerData {
     consumerId: string;
 }
@@ -136,7 +136,7 @@ export interface StreamFileRequestOptions {
     restartOnExit?: boolean;
     additionalInputOptions?: string[];
 }
-export declare type CodecCopyKinds = {
+export type CodecCopyKinds = {
     [kind in MediaKind]?: boolean;
 };
 export interface CodecCopyOption {
@@ -200,7 +200,7 @@ export interface PortData {
 export interface PushSimulcastInput {
     simulcast?: SizeData[];
 }
-export declare type CodecKinds = {
+export type CodecKinds = {
     [kind in MediaKind]?: CODEC;
 };
 export interface CodecKindsData {
@@ -267,7 +267,7 @@ export interface ConferenceBasicInput {
         video?: ProducerVideoCodecOptions;
     };
 }
-export declare type BuiltinHandlerName = 'Chrome74' | 'Chrome70' | 'Chrome67' | 'Chrome55' | 'Firefox60' | 'Safari12' | 'Safari11' | 'Edge11' | 'ReactNative';
+export type BuiltinHandlerName = 'Chrome74' | 'Chrome70' | 'Chrome67' | 'Chrome55' | 'Firefox60' | 'Safari12' | 'Safari11' | 'Edge11' | 'ReactNative';
 export interface ConferenceInput extends ConferenceBasicInput {
     worker?: number;
     url: string;
@@ -377,7 +377,7 @@ export interface MixerHlsFormatBitrateOptions extends MixerHlsFormatPresetOption
 export interface MixerHlsFormatCrfOptions extends MixerHlsFormatPresetOptions {
     crf: number;
 }
-export declare type MixerHlsFormatOptions = MixerHlsFormatBitrateOptions | MixerHlsFormatCrfOptions;
+export type MixerHlsFormatOptions = MixerHlsFormatBitrateOptions | MixerHlsFormatCrfOptions;
 export interface MixerPipeLiveData extends MixerPipeData, StreamData, PushSimulcastInput, BitrateOptions, CodecKindsData {
     type: MIXER_PIPE_TYPE.LIVE;
 }

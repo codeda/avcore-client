@@ -25,6 +25,23 @@ module.exports = env => {
                         },
                     ],
                 },
+                {
+                    test: /\.js$/,
+                    use: [
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: [
+                                    ["@babel/preset-env", { targets: "defaults" }]
+                                ],
+                                plugins: [
+                                    "@babel/plugin-transform-nullish-coalescing-operator",
+                                    "@babel/plugin-proposal-optional-chaining"
+                                ]
+                            }
+                        },
+                    ]
+                }
             ],
         },
         resolve: {
